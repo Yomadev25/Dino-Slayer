@@ -6,9 +6,12 @@ using Photon.Realtime;
 using ExitGames.Client.Photon;
 using System.Linq;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviourPunCallbacks, IOnEventCallback
 {
+    public static GameManager instance;
+
     public enum State
     {
         MENU,
@@ -30,19 +33,29 @@ public class GameManager : MonoBehaviourPunCallbacks, IOnEventCallback
     [SerializeField]
     private string endpoint;
     [SerializeField]
+    private int minimumPlayer;
+    [SerializeField]
     private bool test;
 
+    [Header("Audios")]
+    [SerializeField]
+    private AudioSource _bgm;
+
     private Coroutine _startCoutdownCoroutine;
+
+    public List<Character> characters => _characters;
 
     public static UnityAction<List<Character>> onUpdateCharacters;
     public static UnityAction<State> onUpdateState;
     public static UnityAction<string> onCreatedRoom;
     public static UnityAction onCountdown;
+    public UnityAction<int> onTimeUpdate;
 
     public const byte GAME_START = 1;
 
     private void Awake()
     {
+        instance = this;
         PhotonNetwork.AddCallbackTarget(this);
     }
 
@@ -65,6 +78,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IOnEventCallback
     public override void OnConnectedToMaster()
     {
         base.OnConnectedToMaster();
+        Debug.Log("Connected");
+        CreateRoom();
+    }
+
+    public override void OnCreateRoomFailed(short returnCode, string message)
+    {
         CreateRoom();
     }
 
@@ -80,6 +99,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
     public override void OnCreatedRoom()
     {
+        Debug.Log("Created Room");
         string url = $"https://{endpoint}/?{PhotonNetwork.CurrentRoom.Name}";
         onCreatedRoom?.Invoke(url);
     }
@@ -98,9 +118,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IOnEventCallback
             Destroy(character.gameObject);
         }
 
-        if (_characters.Count == 0)
+        if (_characters.Count == 0 && _currentState == State.GAMEPLAY)
         {
-            //Restart Game
+            PhotonNetwork.Disconnect();
         }
 
         onUpdateCharacters?.Invoke(_characters);
@@ -140,7 +160,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
     private void CheckAllPlayerIsReady()
     {
-        if (_characters.Count > 1 && _characters.All(x => x.isReady))
+        if (_characters.Count >= minimumPlayer && _characters.All(x => x.isReady))
         {
             if (_startCoutdownCoroutine != null)
             {
@@ -186,14 +206,31 @@ public class GameManager : MonoBehaviourPunCallbacks, IOnEventCallback
                 object[] content = new object[] {};
                 RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
                 PhotonNetwork.RaiseEvent(GAME_START, content, raiseEventOptions, SendOptions.SendReliable);
+
+                foreach (Character character in _characters)
+                {
+                    character.isReady = false;
+                }
+                onUpdateCharacters?.Invoke(_characters);
+
+                _bgm.Play();
                 break;
             case State.RESULT:
+                onTimeUpdate?.Invoke((int)_duration);
+                GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+                foreach (GameObject enemy in enemies)
+                {
+                    Destroy(enemy);
+                }
+
+                _bgm.Stop();
                 break;
             default:
                 break;
         }
 
         _currentState = state;
+        onUpdateState?.Invoke(_currentState);
     }
 
     private void StateUpdate()
@@ -206,6 +243,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IOnEventCallback
                 if (_duration > 0)
                 {
                     _duration -= Time.deltaTime;
+                    onTimeUpdate?.Invoke((int)_duration);
                 }
                 else
                 {
@@ -217,5 +255,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IOnEventCallback
             default:
                 break;
         }
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Transition.instance.FadeIn(() =>
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        });
     }
 }

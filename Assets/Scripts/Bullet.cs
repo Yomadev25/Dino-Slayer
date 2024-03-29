@@ -13,6 +13,6 @@ public class Bullet : MonoBehaviour
     private void Start()
     {
         _rb.AddForce(transform.up * _speed, ForceMode2D.Impulse);
-        Destroy(gameObject, 1f);
+        Destroy(gameObject, 1.5f);
     }
 }

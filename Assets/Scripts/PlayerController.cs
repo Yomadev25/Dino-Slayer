@@ -55,6 +55,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IOnEventCallback
     public const byte MOVE_CHARACTER = 12;
     public const byte ATTACK = 13;
 
+    private string[] guestName = new string[] { "George", "Paul", "Matti" };
+
     private void Awake()
     {
         PhotonNetwork.AddCallbackTarget(this);
@@ -111,6 +113,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IOnEventCallback
     #region CONNECTING
     private void JoinGame()
     {
+        if (string.IsNullOrEmpty(_nameInput.text))
+        {
+            _nameInput.text = guestName[Random.Range(0, guestName.Length)] + (Random.Range(100, 1000)).ToString();
+        }
+
         PhotonNetwork.NickName = _nameInput.text;
         string room = "TEST";
 

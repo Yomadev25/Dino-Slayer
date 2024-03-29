@@ -15,6 +15,11 @@ public class Transition : MonoBehaviour
         instance = this;
     }
 
+    private void Start()
+    {
+        FadeOut();
+    }
+
     public void FadeIn(UnityAction callback = null)
     {
         _canvasGroup.alpha = 0f;

@@ -1,8 +1,10 @@
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Character : MonoBehaviour, IOnEventCallback
@@ -10,6 +12,7 @@ public class Character : MonoBehaviour, IOnEventCallback
     public string id;
     public Color color;
     public bool isReady;
+    public int score;
 
     [Header("Movement Setting")]
     [SerializeField]
@@ -31,6 +34,12 @@ public class Character : MonoBehaviour, IOnEventCallback
     private Rigidbody2D _rigidBody;
     [SerializeField]
     private Animator _anim;
+    [SerializeField]
+    private AudioSource _hitSfx;
+    [SerializeField]
+    private TMP_Text _nameText;
+    [SerializeField]
+    private GameObject _hitFx;
 
     float horizontal;
     float vertical;
@@ -38,6 +47,8 @@ public class Character : MonoBehaviour, IOnEventCallback
     float gunVertical;
 
     bool knockBack;
+
+    public static event Action onScoreUpdate;
 
     private void OnEnable()
     {
@@ -52,6 +63,7 @@ public class Character : MonoBehaviour, IOnEventCallback
     private void Start()
     {
         _spriteRenderer.color = color;
+        _nameText.text = id;
     }
 
     private void Update()
@@ -140,8 +152,16 @@ public class Character : MonoBehaviour, IOnEventCallback
     IEnumerator Knockback(Vector2 direction)
     {
         knockBack = true;
+        _hitSfx.Play();
+        Destroy(Instantiate(_hitFx, transform.position, Quaternion.identity), 1f);
         _rigidBody.AddForce(direction * 5f, ForceMode2D.Impulse);
         yield return new WaitForSeconds(0.1f);
         knockBack = false;
+    }
+
+    public void AddScore(int score)
+    {
+        this.score += score;
+        onScoreUpdate?.Invoke();
     }
 }
