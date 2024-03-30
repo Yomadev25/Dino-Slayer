@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IOnEventCallback
     [SerializeField]
     private int minimumPlayer;
     [SerializeField]
+    private int maximumPlayer;
+    [SerializeField]
     private bool test;
 
     [Header("Audios")]
@@ -90,7 +92,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IOnEventCallback
     private void CreateRoom()
     {
         RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = 5;
+        roomOptions.MaxPlayers = maximumPlayer + 1;
         roomOptions.IsVisible = true;
 
         string room = test ? "TEST" : Random.Range(1000, 10000).ToString();

@@ -14,6 +14,8 @@ public class ResultHud : MonoBehaviour
     private CanvasGroup _canvasGroup;
     [SerializeField]
     private TMP_Text _restartText;
+    [SerializeField]
+    private Scrollbar _scrollBar;
 
     [Header("Ranking Template")]
     [SerializeField]
@@ -64,6 +66,11 @@ public class ResultHud : MonoBehaviour
 
             yield return new WaitForSeconds(0.2f);
         }
+
+        LeanTween.value(0, 1, 5f).setOnUpdate((x) =>
+        {
+            _scrollBar.value = x;
+        }).setLoopPingPong();
 
         float duration = 10f;
         while (duration > 0)
