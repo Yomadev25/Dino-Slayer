@@ -24,3 +24,8 @@ PhotonNetwork.RaiseEvent();
 แล้วให้ GameManager.cs ใน **Game scene** รับข้อมูล Event เหล่านั้นเพื่อควบคุมตัวละคร
 
 อ่านข้อมูลเพิ่มเติมเกี่ยวกับ RaiseEvent() ของ Photon ได้ที่ https://doc.photonengine.com/pun/current/gameplay/rpcsandraiseevent
+
+
+## Credit
+- Dino Character Sprites [@ScissorMarks](https://twitter.com/ScissorMarks) 
+- Environment Sprites https://analogstudios.itch.io/fantasy
