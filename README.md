@@ -2,8 +2,8 @@
 เป็นเกม Local Multiplayer ที่ให้ผู้เล่นนำโทรศัพท์มาสแกน QR Code บนจอที่แสดงตัวเกม แล้วจะแสดง Joystick ออกมาให้ผู้เล่นได้ควบคุมตัวละคร
 ![Untitled](https://github.com/Yomadev25/Dino-Slayer/assets/61727972/653d0a87-c6bf-407b-9487-140aed12437d)
 
-🦖 ทดลองเล่นบน WebGL ได้ที่ https://yomadev25.github.io/Virtual-Joystick-Game/game
-🦖 สามารถดาวน์โหลดตัวเกมหลักได้ที่ https://drive.google.com/file/d/1A86V9eaP_llnLQf_DN6e36r71Dt7AmPv/view?usp=sharing
+- 🦖 ทดลองเล่นบน WebGL ได้ที่ https://yomadev25.github.io/Virtual-Joystick-Game/game
+- 🦖 สามารถดาวน์โหลดตัวเกมหลักได้ที่ https://drive.google.com/file/d/1A86V9eaP_llnLQf_DN6e36r71Dt7AmPv/view?usp=sharing
 
 # Tools
 - Unity Engine
